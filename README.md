@@ -4,7 +4,10 @@ With the Ultimate-II and Ultimate-64 we can now star applications by calling the
 It will in turn load the program into the c64 and start it. This is a hot deploy and thus my CI/CD brain immediately wante to do this and I wrote this eample CI/CD pipeline using GitHub actions.
 
 ## Reasons to use it
-Let's be honest we all develop our C64 code on our massively powerful computers as they provide us with poweful debuggers and editting solutions and syntax highlighting and we then run it in our emulators. And when that works we take out the thumb drive of our Ultimate-II or Ultimate64 and we upload the code there and then select and run it through the Ultimate-xx.
+First of all this was a good practical case to show the power of GitHub actions in a video.
+
+But let's be honest when we all develop for our C64 we all do that on our massively powerful computers that provide us with cool debuggers- ,editting solutions and syntax highlighting and we then run and test it in our emulators. 
+And only when that works we take out the thumb drive of our Ultimate-II or Ultimate64 and we upload the code there and then select and run it through the Ultimate-xx.
 Well that last step is tedious, even when I already uploaded my compiled PRG to the Ultimate-II+ using FTP, I still needed to do this.
 And we tend to only want to run it on real hardware after we publish our code into our repository.
 This allows you to do that! Without an afterhought. You just have you C64 on whilst you develop and when you commit after your preliminary test on the emulator works, it will actually build it and push it to your C64 for a final check.
