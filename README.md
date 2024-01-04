@@ -50,7 +50,10 @@ Then we build our main.asm file with Kick Assembler
           set -e
           java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
 ```
+
 And finally we push the build PRG to the C64
+```yaml
  - name: Deploy to C64
         run: |
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+```
