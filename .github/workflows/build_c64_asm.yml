@@ -44,4 +44,4 @@ jobs:
 
       - name: Deploy to C64
         run: |
-          curl -H "Content-Type multipatr/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runner:run_prg" -v
+          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runner:run_prg" -v
