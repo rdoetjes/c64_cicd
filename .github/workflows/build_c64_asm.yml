@@ -43,7 +43,6 @@ jobs:
           java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
 
   deploy:
-    dependson
     runs-on: self-hosted
     needs: build
     steps:
