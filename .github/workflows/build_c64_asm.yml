@@ -68,7 +68,7 @@ jobs:
 
       - name: Deploy to C64
         run: |
-          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/c64_cicd/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
 
       - name: CleanUP
         run: |           
