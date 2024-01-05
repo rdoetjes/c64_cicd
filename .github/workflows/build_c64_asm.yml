@@ -52,8 +52,7 @@ jobs:
           retention-days: 1
 
       - name: CleanUP
-        run: | 
-          rm -rf $GITHUB_WORKSPACE/
+        run: |           
           rm -rf ${{ runner.workspace}}/build
           
   deploy:
