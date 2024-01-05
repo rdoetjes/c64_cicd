@@ -201,6 +201,7 @@ jobs:
 
       - name: CleanUP
         run: |           
-          rm -rf ${{ runner.workspace}}/artefact
-          
+          rm -rf ${{ runner.workspace}}/artefact          
 ```
+
+![Two jobs with build artefacty](https://github.com/rdoetjes/c64_cicd/blob/main/artefact.png)
