@@ -50,7 +50,12 @@ jobs:
           path: ${{ runner.workspace}}/build/*
           if-no-files-found: error
           retention-days: 1
-      
+
+      - name: CleanUP
+        run: | 
+          rm -rf $GITHUB_WORKSPACE/
+          rm -rf ${{ runner.workspace}}/build
+          
   deploy:
     runs-on: self-hosted
     needs: build
@@ -60,9 +65,13 @@ jobs:
           # Name of the artifact to upload.
           # Optional. Default is 'artifact' 
           name: c64_lessons
-          path: ${{ runner.workspace}}/artefact
-          if-no-files-found: error
-          retention-days: 1
+          path: ${{ runner.workspace}}/artefact                    
+
       - name: Deploy to C64
         run: |
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+
+      - name: CleanUP
+        run: |           
+          rm -rf ${{ runner.workspace}}/artefact
+          
