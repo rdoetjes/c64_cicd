@@ -119,6 +119,6 @@ jobs:
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
 ```
 
-![Two jobs a build and a deploy]https://github.com/rdoetjes/c64_cicd/dual_jobs.png
+![Two jobs a build and a deploy](https://github.com/rdoetjes/c64_cicd/blob/main/dual_jobs.png)
 
 Now the best and professional approach is to created artefacts, github can store the artefacts for a defined period and you can download these in your deploy step
