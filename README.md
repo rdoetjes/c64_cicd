@@ -109,14 +109,32 @@ jobs:
           set -e
           java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
 
+      - uses: actions/upload-artifact@v4
+        with:
+          # Name of the artifact to upload.
+          # Optional. Default is 'artifact' 
+          name: c64_lessons
+          path: ${{ runner.workspace}}/build/*
+          if-no-files-found: error
+          retention-days: 1
+
   # this now is it's own seperate job that can be restarted when failed
   deploy:
     runs-on: self-hosted
     needs: build
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # Name of the artifact to upload.
+          # Optional. Default is 'artifact' 
+          name: c64_lessons
+          path: ${{ runner.workspace}}/artefact
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Deploy to C64
         run: |
-          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artegact/c64_lessons/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
 ```
 
 ![Two jobs a build and a deploy](https://github.com/rdoetjes/c64_cicd/blob/main/dual_jobs.png)
