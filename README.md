@@ -57,6 +57,8 @@ And finally we push the build PRG to the C64
         run: |
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
 ```
+
+## Mutli job (multi stage)
 In the video which was merely a quick introduction we didn't discuss multi-stage (multi job)
 Deployment is generally a different job. When you call a different job the public build agent (runner) will be cleaned so your main.prg file isn't there anymore. A single node self-hosted guarantees you will:
 - Get back the node that you build on (nodes are handed out on which one is available)
@@ -121,4 +123,84 @@ jobs:
 
 ![Two jobs a build and a deploy](https://github.com/rdoetjes/c64_cicd/blob/main/dual_jobs.png)
 
+## Working mutli stage with artefact
 Now the best and professional approach is to created artefacts, github can store the artefacts for a defined period and you can download these in your deploy step
+
+```yaml
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Install KickAss if needed
+        run: |
+          set -e
+          cd ${{ runner.workspace }}
+          if ! [ -f KickAss.jar ] ;then
+            echo "Installing KickAss"
+            curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip
+            unzip -o KickAssembler.zip  
+          else
+            echo "Already installed proceeding."
+          fi
+      
+      - name: Build asm
+        run: | 
+          set -e
+          java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          # Name of the artifact to upload.
+          # Optional. Default is 'artifact' 
+          name: c64_lessons
+          path: ${{ runner.workspace}}/build/*
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: CleanUP
+        run: |           
+          rm -rf ${{ runner.workspace}}/build
+          
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # Name of the artifact to upload.
+          # Optional. Default is 'artifact' 
+          name: c64_lessons
+          path: ${{ runner.workspace}}/artefact                    
+
+      - name: Deploy to C64
+        run: |
+          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+
+      - name: CleanUP
+        run: |           
+          rm -rf ${{ runner.workspace}}/artefact
+          
+```
