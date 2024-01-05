@@ -42,6 +42,9 @@ jobs:
           set -e
           java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
 
+  deploy:
+    runs-on: self-hosted
+    steps:
       - name: Deploy to C64
         run: |
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
