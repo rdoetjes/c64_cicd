@@ -29,7 +29,7 @@ jobs:
         run: |
           set -e
           cd ${{ runner.workspace }}
-          if ! [ -f KickAsss.jar ] ;then
+          if ! [ -f KickAss.jar ] ;then
             echo "Installing KickAss"
             EC=$(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --write-out "%{http_code}" --output KickAssembler.zip)
             echo "HTTP: STATUS $EC"
