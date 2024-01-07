@@ -76,7 +76,7 @@ jobs:
 
       - name: Deploy to C64
         run: |
-          EC=$(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" --write-out "%{http_code}" "http://192.168.178.156/v1/runners:run_prg")
+          EC=$(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" --output /dev/null --write-out "%{http_code}" "http://192.168.178.156/v1/runners:run_prg")
           echo $EC
           # We need this because github actions only uses unsigned 8 bit exit codes as errors
           if [ "$EC" -ne "200" ] ; then
