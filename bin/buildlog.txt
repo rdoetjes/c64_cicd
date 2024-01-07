@@ -1,0 +1,16 @@
+Output dir: /Users/rdoetjes/develop/c64_cicd/bin
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+Writing prg file: main.prg
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$0825 Basic End
+  $6000-$7072 Music
+
+Writing Symbol file: main.sym
