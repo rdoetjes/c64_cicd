@@ -36,6 +36,7 @@ We will only download KickAss if it is not already on the runner
           cd ${{ runner.workspace }}
           if ! [ -f KickAss.jar ] ;then
             echo "Installing KickAss"
+            # no curl error handling yet!!! This is a bad idea we will do that down below
             curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip
             unzip -o KickAssembler.zip  
           else
@@ -55,6 +56,7 @@ And finally we push the build PRG to the C64
 ```yaml
  - name: Deploy to C64
         run: |
+           # no curl error handling yet!!! This is a bad idea we will do that down below
           curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
 ```
 
@@ -100,7 +102,13 @@ jobs:
           cd ${{ runner.workspace }}
           if ! [ -f KickAss.jar ] ;then
             echo "Installing KickAss"
-            curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip
+            EC=$(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --write-out "%{http_code}" --output KickAssembler.zip)
+            echo "HTTP: STATUS $EC"
+            # we need to check the error code and weirdly enough github actions only supports exit code of size u8
+            if [ "$EC" -ne "200" ] ; then
+              echo "Curl request ended with errorcode $EC"
+              exit 1
+            fi
             unzip -o KickAssembler.zip  
           else
             echo "Already installed proceeding."
@@ -118,7 +126,13 @@ jobs:
     steps:
       - name: Deploy to C64
         run: |
-          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/build/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+            EC=$(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" --output /dev/null --write-out "%{http_code}" "http://192.168.178.156/v1/runners:run_prg")
+            echo "HTTP: STATUS $EC"
+            # We need this because github actions only uses unsigned 8 bit exit codes as errors
+            if [ "$EC" -ne "200" ] ; then
+                  echo "Curl request ended with errorcode $EC"
+                  exit 1
+            fi
 ```
 
 ![Two jobs a build and a deploy](https://github.com/rdoetjes/c64_cicd/blob/main/dual_jobs.png)
@@ -158,9 +172,15 @@ jobs:
         run: |
           set -e
           cd ${{ runner.workspace }}
-          if ! [ -f KickAss.jar ] ;then
+          if ! [ -f KickAsss.jar ] ;then
             echo "Installing KickAss"
-            curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip
+            EC=$(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --write-out "%{http_code}" --output KickAssembler.zip)
+            echo "HTTP: STATUS $EC"
+            # we need to check the error code and weirdly enough github actions only supports exit code of size u8
+            if [ "$EC" -ne "200" ] ; then
+              echo "Curl request ended with errorcode $EC"
+              exit 1
+            fi
             unzip -o KickAssembler.zip  
           else
             echo "Already installed proceeding."
@@ -171,6 +191,7 @@ jobs:
           set -e
           java -jar ${{ runner.workspace}}/KickAss.jar $GITHUB_WORKSPACE/main.asm -odir ${{runner.workspace}}/build -o ${{ runner.workspace}}/build/main.prg
 
+      ## upload the artefacts to the pipeline
       - uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload.
@@ -188,6 +209,7 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
+      ## download the artefacts from the pipeline
       - uses: actions/download-artifact@v4
         with:
           # Name of the artifact to upload.
@@ -197,11 +219,17 @@ jobs:
 
       - name: Deploy to C64
         run: |
-          curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg" -v
+          EC=$(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" --output /dev/null --write-out "%{http_code}" "http://192.168.178.156/v1/runners:run_prg")
+          echo "HTTP: STATUS $EC"
+          # We need this because github actions only uses unsigned 8 bit exit codes as errors
+          if [ "$EC" -ne "200" ] ; then
+            echo "Curl request ended with errorcode $EC"
+            exit 1
+          fi
 
       - name: CleanUP
         run: |           
-          rm -rf ${{ runner.workspace}}/artefact          
+          rm -rf ${{ runner.workspace}}/artefact    
 ```
 
 ![Two jobs with build artefacty](https://github.com/rdoetjes/c64_cicd/blob/main/artefact.png)
