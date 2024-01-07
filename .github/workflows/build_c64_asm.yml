@@ -31,9 +31,9 @@ jobs:
           cd ${{ runner.workspace }}
           if ! [ -f KickAss.jar ] ;then
             echo "Installing KickAss"
-            EC = $(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip)
+            EC=$(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip)
             # we need to check the error code and weirdly enough github actions only supports exit code of size u8
-            if [ $EC -ne 200 ] ; then
+            if [ "$EC" -ne 200 ] ; then
               echo "Curl request ended with errorcode $EC"
               exit 1
             fi
@@ -75,9 +75,9 @@ jobs:
 
       - name: Deploy to C64
         run: |
-          EC = $(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg")
+          EC=$(curl -H "Content-Type multipart/form-data" -F  "file=@${{runner.workspace}}/artefact/main.prg" "http://192.168.178.156/v1/runners:run_prg")
           # We need this because github actions only uses unsigned 8 bit exit codes as errors
-          if [ $EC -ne 200 ] ; then
+          if [ "$EC" -ne 200 ] ; then
             echo "Curl request ended with errorcode $EC"
             exit 1
           fi
