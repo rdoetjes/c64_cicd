@@ -3,6 +3,10 @@
 With the Ultimate-II and Ultimate-64 we can now star applications by calling the Rest API on those devices.
 It will in turn load the program into the c64 and start it. This is a hot deploy and thus my CI/CD brain immediately wante to do this and I wrote this eample CI/CD pipeline using GitHub actions.
 
+## Youtube video vs code here
+[![CICD with C64](https://img.youtube.com/vi/E5btYvF3H94/0.jpg)](https://www.youtube.com/watch?v=E5btYvF3H94)
+The YouTube video only shows the core steps. In this document and the final build_c64_asm.yml we added error checking for the curl calls, and a second job called deploy, and all the way at the bottom even creating an artefact that is downloaded from the deplou job.
+
 ## Reasons to use it
 First of all this was a good practical case to show the power of GitHub actions in a video.
 
