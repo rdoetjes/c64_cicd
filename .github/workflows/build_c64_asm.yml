@@ -31,7 +31,7 @@ jobs:
           cd ${{ runner.workspace }}
           if ! [ -f KickAsss.jar ] ;then
             echo "Installing KickAss"
-            EC=$(curl -sw '%{http_code} -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --output KickAssembler.zip)
+            EC=$(curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0" -X GET http://theweb.dk/KickAssembler/KickAssembler.zip --write-out "%{http_code} --output KickAssembler.zip)
             # we need to check the error code and weirdly enough github actions only supports exit code of size u8
             if [ "$EC" -ne "200" ] ; then
               echo "Curl request ended with errorcode $EC"
