@@ -143,7 +143,7 @@ Now the best and professional approach is to created artefacts, github can store
 ```yaml
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CICD
 
 # Controls when the workflow will run
 on:
